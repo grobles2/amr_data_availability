@@ -7,7 +7,8 @@ library(scales)
 library(dplyr)
 library(DT)
 
-resdata <- read.csv("table.csv", stringsAsFactors = FALSE) 
+resdata <- read.csv("c:/Git/amr_data_availability/table.csv", stringsAsFactors = FALSE) 
+resdata$combo <- paste0(resdata$pathogen,"-",resdata$abx_class)
 #rrdata <- read.csv("rrtable.csv", stringsAsFactors = FALSE) 
 
 #UI is the end user interface
@@ -91,9 +92,9 @@ c('acinetobacter_baumannii-beta_lactamase_inhibitor',
            #dataTableOutput('table'),
            htmlOutput('resistance_pdfs'),
     ),
-   tabPanel("Relative risk", 
+   tabPanel("Relative risk: age cascade", 
             # Combo input
-            selectInput("abxclass", "Relative risk data by antibiotic class:",
+            selectInput("abxclass", "Relative risk data by combination:",
                         c('aminoglycoside','aminopenicillin','anti_pseudomonal_penicillin','beta_lactamase_inhibitor',
                           'carbapenem','fluoroquinolone','fourth_gen_ceph','mdr','macrolide','methicillin','penicillin','sulfa','third_gen_ceph','vancomycin'
                         ),
@@ -113,6 +114,7 @@ server <- function(input, output) {
    })
    abxclass <- reactive({
      input$abxclass
+     
    })
    #Subset the data to create plots
       output$resistance_pdfs <- renderText({
@@ -129,16 +131,28 @@ server <- function(input, output) {
 
       output$rr_pdfs <- renderText({
       y <- abxclass()
+      rrcombos <- unique(resdata$combo[resdata$abx_class == y])
+      n_rrcombos <- length(rrcombos)
+      s <- list()
+      for(i in 1:n_rrcombos) {
+        s[i] <- paste0('st_',rrcombos[i],'.png title = "',rrcombos[i],'"')
+      }
+      textoreturn<-c()
+      for(i in 1:n_rrcombos) {
+        textoconcat <- paste0('<iframe style="height:450px; width:95%" src="',s[i],'"></iframe>', sep = "\n")
+        textoreturn <- paste0(textoreturn,textoconcat)
+      }
       #y <- substring(combination,1,stringr::str_locate(combination,"-")-1)[1]
       #z <- substring(combination,stringr::str_locate(combination,"-")+1,)[1]
       #y<-ifelse(combination=="acinetobacter_baumannii","acinetobacter_baumanii",combination)
-      pdf1 <- paste0(y,'_ysr.pdf')
-      pdf2 <- paste0(y,"_map.pdf")
-      return(paste('<iframe style="height:450px; width:95%" src="', pdf1,'"></iframe>','<iframe style="height:450px; width:95%" src="', pdf2,'"></iframe>', sep = "\n"))
+  #    pdf1 <- paste0(y,'_ysr.pdf')
+   #   pdf2 <- paste0(y,"_map.pdf")
+      #return(paste('<iframe style="height:450px; width:95%" src="', pdf1,'"></iframe>','<iframe style="height:450px; width:95%" src="', pdf2,'"></iframe>', sep = "\n"))
+      return(textoreturn) 
       }) 
       
-      output$table <- renderDataTable(resdata)
-      output$tablerr <- renderDataTable(rrdata)
+     # output$table <- renderDataTable(resdata)
+      #output$tablerr <- renderDataTable(rrdata)
       
       }
 
