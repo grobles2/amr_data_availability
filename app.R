@@ -7,7 +7,7 @@ library(scales)
 library(dplyr)
 library(DT)
 
-resdata <- read.csv("c:/Git/amr_data_availability/table.csv", stringsAsFactors = FALSE) 
+resdata <- read.csv("table.csv", stringsAsFactors = FALSE) 
 resdata$combo <- paste0(resdata$pathogen,"-",resdata$abx_class)
 #rrdata <- read.csv("rrtable.csv", stringsAsFactors = FALSE) 
 
