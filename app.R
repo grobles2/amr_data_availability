@@ -135,11 +135,11 @@ server <- function(input, output) {
       n_rrcombos <- length(rrcombos)
       s <- list()
       for(i in 1:n_rrcombos) {
-        s[i] <- paste0('st_',rrcombos[i],'.png title = "',rrcombos[i],'"')
+        s[i] <- paste0('st_',rrcombos[i],'.png') # title = "',rrcombos[i],'"')
       }
       textoreturn<-c()
       for(i in 1:n_rrcombos) {
-        textoconcat <- paste0('<iframe style="height:450px; width:95%" src="',s[i],'"></iframe>', sep = "\n")
+        textoconcat <- paste0('<iframe style="height:450px; width:47%" src="',s[i],'"></iframe>', sep = "\n")
         textoreturn <- paste0(textoreturn,textoconcat)
       }
       #y <- substring(combination,1,stringr::str_locate(combination,"-")-1)[1]
